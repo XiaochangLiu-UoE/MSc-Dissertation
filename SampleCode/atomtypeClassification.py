@@ -1,5 +1,5 @@
+#!/usr/bin/python
 import os
-import csv
 import numpy as np
 import plotly.figure_factory as ff
 from plotly.offline import plot
@@ -117,33 +117,4 @@ SM = np.array(SM)
 fig = ff.create_dendrogram(X=SM, labels=list(AA_List.keys()), color_threshold=45)
 fig['layout'].update({'width': 1240})
 fig['layout'].update({'height': 500})
-
-"""csv_file = 'Z:\\project\\Metadata\\BindingSitesAnalysis.csv'
-csv_lines = read_csv(csv_file)
-
-ranking = tuple(fig['layout']['xaxis']['ticktext'])
-
-AA_dict = {}
-for line in csv_lines:
-    AA_dict[line[0]] = line[1:]
-rows = []
-for aa in ranking:
-    rows.append(AA_dict[aa])
-rows.reverse()
-with open('Z:\\project\\Metadata\\AA_clustering_atomtype.csv', 'w+', newline='') as w:
-    w = csv.writer(w)
-    w.writerows(rows)"""
-
 plot(fig)
-
-"""Result = cal_similarity(BP_list)
-x_axis = [' ']
-x_axis.extend(tuple(AA_List.keys()))
-similarity_matrix = tuple(tuple(Result[receptor].values()) for receptor in Result)
-with open('Z:\\dissertation\\fixed_AtomType.csv', 'w+', newline='') as csv_file:
-    writer = csv.writer(csv_file)
-    writer.writerow(x_axis)
-    for i in range(len(similarity_matrix)):
-        row = [x_axis[i + 1]]
-        row.extend(similarity_matrix[i])
-        writer.writerow(row)"""
