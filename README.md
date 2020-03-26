@@ -1,5 +1,7 @@
 # MSc Dissertation at UoE
 
+Details are in the complete dissertation file. Examiners' feedback is also provided. Sample codes are a re-scoring function and a binding site classification method.
+
 Main goal: Performance evaluation of two Virtual Screening (**VS**) tools (LIDAEUS and Autodock Vina). Based on the evaluation results, making attempts to improve the **VS** performance of LIDAEUS.
 
   * [A bit background](#a-bit-background)
@@ -10,8 +12,9 @@ Main goal: Performance evaluation of two Virtual Screening (**VS**) tools (LIDAE
         * [Artificial bias](#artificial-bias)
         * [Good metrics or bad metircs](#good-metrics-or-bad-metircs)
   * [What did I do](#what-did-i-do)
-
-## A bit background
+    + [Weighting energy terms](#weighting-energy-terms)
+    + [Re-scoring](#re-scoring)
+    + [Binding site classification](#binding-site-classification)
 
 Virtual screening (**VS**) is a technique to select suitable molecules from a compound pool, which is widely used in the area of drug discovery and material science. According to the selection criteria, it can be divided into two groups, ligand-based VS (**LBVS**) and structure-based VS (**SBVS**). 
 
@@ -57,7 +60,13 @@ Second, does the **AUROC** really work properly or are these metrics good enough
 So, **AUROC**, **EF** and **BEDROC** were used in this project, but ultimately, we abandoned the **BEDROC** results because we thought the hyperparameter alpha of **BEDROC** is too sensitive. And, honestly, the definition of the so-called **early recognition problem** is quite vague and, to some extent, unrealistic. How early is the "**early**"? **BEDROC** is good metric and many people use it, but, still, we want to evaluate the performance from two aspects, which are the overall classification performance (using **AUROC**) and the early recognition performance (using **EF**).
 
 ## What did I do
-Except for conducting iterative virtual screenings against 81 targets using LIDAEUS and Vina respectively,
+Except for conducting iterative virtual screenings against 81 targets using LIDAEUS and Vina respectively, I had made following attempts.
+
+### Weighting energy terms
+
+### Re-scoring
+
+### Binding site classification
 
 
 
