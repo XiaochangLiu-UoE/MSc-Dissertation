@@ -2,6 +2,15 @@
 
 Main goal: Performance evaluation of two Virtual Screening (**VS**) tools (LIDAEUS and Autodock Vina). Based on the evaluation results, making attempts to improve the **VS** performance of LIDAEUS.
 
+  * [A bit background](#a-bit-background)
+  * [How to evaluate](#how-to-evaluate)
+    + [Benchmarking dataset and Metric](#benchmarking-dataset-and-metric)
+      - [Ranking power or Scoring power](#ranking-power-or-scoring-power)
+      - [Ranking power or Screening power](#ranking-power-or-screening-power)
+        * [Artificial bias](#artificial-bias)
+        * [Good metrics or bad metircs](#good-metrics-or-bad-metircs)
+  * [What did I do](#what-did-i-do)
+
 ## A bit background
 
 Virtual screening (**VS**) is a technique to select suitable molecules from a compound pool, which is widely used in the area of drug discovery and material science. According to the selection criteria, it can be divided into two groups, ligand-based VS (**LBVS**) and structure-based VS (**SBVS**). 
@@ -39,16 +48,16 @@ The second method is to build a list of active compounds and inactive compounds 
 
 ##### Artificial bias
 
-The disadvantage of this method is even more obvious. First, how should we find and define the inactive compound? In some datasets (**DUD-E** and **DEKOIS** series), decoys are artificial, which might have similar physiochemical properties to actives but different 2D-topology, vice versa. Because of this, people are always asking whether these decoys are really decoys. Such an issue is common in data-driven drug discovery. That is the lack of true negative data. 
+The disadvantage of this method is even more obvious. First, how should we find and define the inactive compound? In some datasets (**DUD-E** and **DEKOIS** series), decoys are artificially made, which might have similar physiochemical properties to actives but different 2D-topology, vice versa. Because of this, people are always asking whether these decoys are really decoys. Such an issue is common in data-driven drug discovery. That is the lack of true negative data. 
 
-##### Good metrics, bad metircs
+##### Good metrics or bad metircs
 
 Second, does the **AUROC** really work properly or are these metrics good enough? The answer is, **sometimes**. Because, soon, people found that multiple shapes of the **ROC** curve can share one single **AUROC** value but one of these shapes represents a better **VS** performance than the others did. The underlying concern is the so-called **early recognition problem** in **VS**. To see whether a programme can address such a problem, people borrowed and developed more metrics, including partial AUC (**pAUC**), Robust Initial Enhancement (**RIE**), Boltzmann-Enhanced Discrimination of ROC (**BEDROC**), Enrichment Factor (**EF**), power metric, predictiveness curve, statistical analysis framework, etc (in fact, observing the slope of the **ROC** cure can do such work). Essentially and certainly, all these metrics have more or less issues, but people seemed to give up addressing this good/bad metric problem since 2015 (the year when pridictiveness curve was introduced, but it seems no research group used it).
 
 So, **AUROC**, **EF** and **BEDROC** were used in this project, but ultimately, we abandoned the **BEDROC** results because we thought the hyperparameter alpha of **BEDROC** is too sensitive. And, honestly, the definition of the so-called **early recognition problem** is quite vague and, to some extent, unrealistic. How early is the "**early**"? **BEDROC** is good metric and many people use it, but, still, we want to evaluate the performance from two aspects, which are the overall classification performance (using **AUROC**) and the early recognition performance (using **EF**).
 
 ## What did I do
-
+Except for conducting iterative virtual screenings against 81 targets using LIDAEUS and Vina respectively,
 
 
 
