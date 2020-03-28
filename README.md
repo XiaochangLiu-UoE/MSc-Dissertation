@@ -1,6 +1,8 @@
 # MSc Dissertation at UoE
 
-Details are in the complete dissertation file. Examiners' feedback is also provided. Sample codes includes some scripts about a re-scoring function and a binding site classification method.
+Details are in the complete dissertation file. If you want to save your time, maybe you could consider reading the examiners' feedback directly, or you can skim the following content.
+
+(Sample codes only include some scripts about a re-scoring function and a binding site classification method.)
 ***
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -16,6 +18,7 @@ Details are in the complete dissertation file. Examiners' feedback is also provi
 	- [Weighting energy terms](#weighting-energy-terms)
 	- [Re-scoring](#re-scoring)
 	- [Binding site classification](#binding-site-classification)
+- [End](#end)
 
 <!-- /TOC -->
 ***
@@ -58,7 +61,7 @@ The second method is to build a list of active compounds and inactive compounds 
 
 ##### Artificial bias
 
-The disadvantage of this method is even more obvious. First, how should we find and define the inactive compound? In some datasets (**DUD-E** and **DEKOIS** series), decoys are artificially made, which might have similar physiochemical properties to actives but different 2D-topology, vice versa. Because of this, people are always asking whether these decoys are really decoys. Such an issue is common in data-driven drug discovery. That is the lack of true negative data.
+The disadvantage of this method is even more obvious. First, how should we find and define the inactive compound? In some datasets (**DUD-E** and **DEKOIS** series), decoys are artificially made, which might have similar physicochemical properties to actives but different 2D-topology, vice versa. Because of this, people are always asking whether these decoys are really decoys. Such an issue is common in data-driven drug discovery. That is the lack of true negative data.
 
 ##### Good metrics or bad metrics
 
@@ -89,7 +92,10 @@ Still, preliminary assessment is important
 
 The scoring function (**SF**) of Vina is tuned using the PDBbind. So, I attempted to parameterized the **SF** of LIDAEUS, which consists of three terms, the van der Waals energy (***vdW***), the hydrogen bond donors' energy (***HBD***) and the hydrogen bond acceptors' energy (***HBA***). The free energy formula in the output looks like this,
 
-$$Free\ Energy = a × vdW + b × HBD + c × HBA \quad (eq.\ 1)$$
+<!---($$Free\ Energy = a × vdW + b × HBD + c × HBA \quad (eq.\ 1)$$)--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA&space;\quad&space;(eq.\&space;1)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA&space;\quad&space;(eq.\&space;1)" title="\tiny Free\ Energy = a \times vdW + b \times HBD + c \times HBA \quad (eq.\ 1)" /></a></center>
+
 
 where, the weights, **𝑎**, **𝑏**, **𝑐**, are normally all set to 1. What I did is to systematically assign different weights to the formula and to subsequently re-rank the compound according to the new energy score and calculate the **AUROC**. Each weight ranges from 0 to 20 with an increment of 1, resulting in 9261 (21 * 21 * 21) outcomes for each target. But we know this could generate redundant combinations where ratio of a, b and c are the same. So, such combinations would only be calculated once. That is to say, we have 7514 weight combinations. Codes are followed.
 
@@ -124,13 +130,19 @@ where, the weights, **𝑎**, **𝑏**, **𝑐**, are normally all set to 1. Wha
 
 Given that there is another **SF** of LIDAEUS, a knowledge-based **SF** meauring whether the docked ligand contacts the key amino acid residues and generating a score ranging from 0 to 1.0, I decided to combine this **SF** and the force fied-based **SF**. The weighted free energy formula looks like,
 
-$$Free\ Energy = PIP_{x} × (a × vdW + b × HBD + c × HBA) \quad (eq.\ 2)$$
+<!---$$Free\ Energy = PIP_{x} × (a × vdW + b × HBD + c × HBA) \quad (eq.\ 2)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;×&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;×&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" title="\tiny Free\ Energy = PIP_{x} × (a \times vdW + b \times HBD + c \times HBA) \quad (eq.\ 2)" /></a></center>
 
 where the **PIP** stands for *pose interaction profile* and 𝑥 represents four types of the **PIP** scores according to different scoring criteria. After obtaining the entropy score, I did the same thing,
 
-$$Free\ Energy = a × (vdW + HBD + HBA) − (b × T \Delta S_{water\ loss} + c × T \Delta S_{side\ chain}) \quad (eq.\ 3)$$
+<!---$$Free\ Energy = a × (vdW + HBD + HBA) − (b × T \Delta S_{water\ loss} + c × T \Delta S_{side\ chain}) \quad (eq.\ 3)$$--->
 
-$$Free\ Energy = PIP_{x} × weighted(Enthalpy + Entropy) \quad (eq.\ 4)$$
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;a&space;\times&space;(vdW&space;&plus;&space;HBD&space;&plus;&space;HBA)&space;-&space;(b&space;\times&space;T&space;\Delta&space;S_{water\&space;loss}&space;&plus;&space;c&space;\times&space;T&space;\Delta&space;S_{side\&space;chain})&space;\quad&space;(eq.\&space;3)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;a&space;\times&space;(vdW&space;&plus;&space;HBD&space;&plus;&space;HBA)&space;-&space;(b&space;\times&space;T&space;\Delta&space;S_{water\&space;loss}&space;&plus;&space;c&space;\times&space;T&space;\Delta&space;S_{side\&space;chain})&space;\quad&space;(eq.\&space;3)" title="\tiny Free\ Energy = a \times (vdW + HBD + HBA) - (b \times T \Delta S_{water\ loss} + c \times T \Delta S_{side\ chain}) \quad (eq.\ 3)" /></a></center>
+
+<!---$$Free\ Energy = PIP_{x} × weighted(Enthalpy + Entropy) \quad (eq.\ 4)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;\times&space;weighted(Enthalpy&space;&plus;&space;Entropy)&space;\quad&space;(eq.\&space;4)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;\times&space;weighted(Enthalpy&space;&plus;&space;Entropy)&space;\quad&space;(eq.\&space;4)" title="\tiny Free\ Energy = PIP_{x} \times weighted(Enthalpy + Entropy) \quad (eq.\ 4)" /></a></center>
 
 Not surprisingly, for most targets, the **AUROC** was increased. But, in some cases, the best **AUROC** could only be 0.50 and this is because all the weights are set to 0 so that every compound shares the same score, which was deemed as a random selection by the **AUROC** calculation algorithm.
 
@@ -144,7 +156,9 @@ In the previous part, I mentioned that I had calculated the entropy and from the
    - markdown the contacted residues
 3. calcultate the entropy
 
-$$Entroy = Number_{water\ loss} × Entropy_{water\ molecue} + Entropy_{side\ chain} \quad (eq.\ 5)$$
+<!---$$Entropy = Number_{water\ loss} × Entropy_{water\ molecue} + Entropy_{side\ chain} \quad (eq.\ 5)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Entropy&space;=&space;Number_{water\&space;loss}&space;\times&space;Entropy_{water\&space;molecue}&space;&plus;&space;Entropy_{side\&space;chain}&space;\quad&space;(eq.\&space;5)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Entropy&space;=&space;Number_{water\&space;loss}&space;\times&space;Entropy_{water\&space;molecue}&space;&plus;&space;Entropy_{side\&space;chain}&space;\quad&space;(eq.\&space;5)" title="\tiny Entropy = Number_{water\ loss} \times Entropy_{water\ molecue} + Entropy_{side\ chain} \quad (eq.\ 5)" /></a></center>
 
 where the entropy values of both a single water molecule and the conformationally changed side chains, are set accoding to the work of [Dunitz (1994)](https://doi.org/10.1126/science.264.5159.670) and [Doig and Sternberg (1995)]( https://doi.org/10.1002/pro.5560041101), respectively.
 
@@ -165,22 +179,44 @@ And then, instead of superposing the sites and calcualting the RMSD or measuring
 3. calculate the related mean, variance and the skew of each atomic distance distribution (12 descriptors)
 4. calculate the distance between each site by using the euclidean distance, namely,
 
-$$\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}} \quad (eq.\ 6)$$
+<!---$$\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}} \quad (eq.\ 6)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}&space;\quad&space;(eq.\&space;6)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}&space;\quad&space;(eq.\&space;6)" title="\tiny \sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}} \quad (eq.\ 6)" /></a></center>
 
 5. calculate the similarity using the following formula
 
-$$\frac{1}{1 + \sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}} \quad (eq.\ 7)$$
+<!---$$\frac{1}{1 + \sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}} \quad (eq.\ 7)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;\frac{1}{1&space;&plus;&space;\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}}&space;\quad&space;(eq.\&space;7)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;\frac{1}{1&space;&plus;&space;\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}}&space;\quad&space;(eq.\&space;7)" title="\tiny \frac{1}{1 + \sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}} \quad (eq.\ 7)" /></a></center>
 
 In an improved published version ([Shave et al, 2015](https://doi.org/10.1371/journal.pone.0116570)), the number of descriptors was increased to 48, whereas, in my implementation, I used 36 descriptors derived by calculating the above 12 coefficients on sets of hydrophobic atoms (**vdW**), hydrogen bond acceptors (**HBA**) and hydrogen bond donors (**HBD**). So, for each site, the descriptor vector looks like,
 
-$$
+<!---$$
 \begin{bmatrix}
 vdW_{01}&vdW_{02}&{\cdots}&{vdW_{12}}&
 HBA_{13}&HBA_{14}&{\cdots}&{HBA_{24}}&
 HBD_{25}&HBD_{26}&{\cdots}&{HBD_{36}}\\
 \end{bmatrix}
-$$
+$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;\begin{bmatrix}&space;vdW_{01}&vdW_{02}&{\cdots}&{vdW_{12}}&&space;HBA_{13}&HBA_{14}&{\cdots}&{HBA_{24}}&&space;HBD_{25}&HBD_{26}&{\cdots}&{HBD_{36}}\\&space;\end{bmatrix}" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;\begin{bmatrix}&space;vdW_{01}&vdW_{02}&{\cdots}&{vdW_{12}}&&space;HBA_{13}&HBA_{14}&{\cdots}&{HBA_{24}}&&space;HBD_{25}&HBD_{26}&{\cdots}&{HBD_{36}}\\&space;\end{bmatrix}" title="\tiny \begin{bmatrix} vdW_{01}&vdW_{02}&{\cdots}&{vdW_{12}}& HBA_{13}&HBA_{14}&{\cdots}&{HBA_{24}}& HBD_{25}&HBD_{26}&{\cdots}&{HBD_{36}}\\ \end{bmatrix}" /></a></center>
 
 And the similarity would be
 
-$$\frac {1}{1 + \sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}} \quad (eq.\ 8)$$
+<!---$$\frac {1}{1 + \sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}} \quad (eq.\ 8)$$--->
+
+<center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;\frac&space;{1}{1&space;&plus;&space;\sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}}&space;\quad&space;(eq.\&space;8)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;\frac&space;{1}{1&space;&plus;&space;\sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}}&space;\quad&space;(eq.\&space;8)" title="\tiny \frac {1}{1 + \sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}} \quad (eq.\ 8)" /></a></center>
+
+Finally, I conducted a hierarchical clustering. The result is followed.
+
+<center><img src="https://github.com/XiaochangLiu-UoE/MSc-Dissertation/raw/master/Pic/Clustering.png"></center>
+
+- *Orange*: **AUROC** value over or equal to 0.70. *Green*: **AUROC** value less than 0.70 but over or equal to 0.60. *Yellow*: **AUROC** value less than 0.60 and greater or equal to 0.50. *Red*: **AUROC** value less than 0.50.
+
+Indeed, a green continuum can be observed from ITK to PIM-2, although the BRAF's color turns to red. A more continuous color bar occurs between PRKCQ and TS, suggesting LIDAEUS has a relatively consistent performance over these targets.
+
+This geometric method was the only method that successfully revealed LIDAEUS might work better on some groups of target than others, out of 4 methods I tried, and the other 3 methods were all based on the physicochemical properties of the binding sites, which probably means that method using structural information is more effective.
+
+##End
+
+The above content includes some parts of my MSc project. If you have any questions about my project or the codes provided, please feel free to contact me.
