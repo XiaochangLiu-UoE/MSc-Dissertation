@@ -4,19 +4,18 @@ Details are in the complete dissertation file. Examiners' feedback is also provi
 ***
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [MSc Dissertation at UoE](#msc-dissertation-at-uoe)
-	- [A bit background](#a-bit-background)
-	- [How to evaluate](#how-to-evaluate)
-		- [Benchmarking dataset and Metric](#benchmarking-dataset-and-metric)
-			- [Ranking power or Scoring power](#ranking-power-or-scoring-power)
-			- [Ranking power or Screening power](#ranking-power-or-screening-power)
-				- [Artificial bias](#artificial-bias)
-				- [Good metrics or bad metrics](#good-metrics-or-bad-metrics)
-	- [What did I do](#what-did-i-do)
-		- [Manipulating the programme](#manipulating-the-programme)
-		- [Weighting energy terms](#weighting-energy-terms)
-		- [Re-scoring](#re-scoring)
-		- [Binding site classification](#binding-site-classification)
+- [A bit background](#a-bit-background)
+- [How to evaluate](#how-to-evaluate)
+	- [Benchmarking dataset and Metric](#benchmarking-dataset-and-metric)
+		- [Ranking power or Scoring power](#ranking-power-or-scoring-power)
+		- [Ranking power or Screening power](#ranking-power-or-screening-power)
+			- [Artificial bias](#artificial-bias)
+			- [Good metrics or bad metrics](#good-metrics-or-bad-metrics)
+- [What did I do](#what-did-i-do)
+	- [Manipulating the programme](#manipulating-the-programme)
+	- [Weighting energy terms](#weighting-energy-terms)
+	- [Re-scoring](#re-scoring)
+	- [Binding site classification](#binding-site-classification)
 
 <!-- /TOC -->
 ***
@@ -65,7 +64,7 @@ The disadvantage of this method is even more obvious. First, how should we find 
 
 Second, does the **AUROC** really work properly or are these metrics good enough? The answer is, **sometimes**. Because, soon, people found that multiple shapes of the **ROC** curve can share one single **AUROC** value but one of these shapes represents a better **VS** performance than the others did. The underlying concern is the so-called **early recognition problem** in **VS**. To see whether a programme can address such a problem, people borrowed and developed more metrics, including partial AUC (**pAUC**), Robust Initial Enhancement (**RIE**), Boltzmann-Enhanced Discrimination of ROC (**BEDROC**), Enrichment Factor (**EF**), power metric, predictiveness curve, statistical analysis framework, etc (in fact, observing the slope of the **ROC** cure can do such work). Essentially and certainly, all these metrics have more or less issues, but people seemed to give up addressing this good/bad metric problem since 2015 (the year when pridictiveness curve was introduced, but it seems no research group used it).
 
-So, **AUROC**, **EF** and **BEDROC** were used in this project, but ultimately, we abandoned the **BEDROC** results because we thought the hyperparameter 𝛼 of **BEDROC** is too sensitive. And, honestly, the definition of the so-called **early recognition problem** is quite vague and, to some extent, unrealistic. How early is the "**early**"? **BEDROC** is good metric and many people use it, but, still, we want to evaluate the performance from two aspects, which are the overall classification performance (using **AUROC**) and the early recognition performance (using **EF**).
+So, **AUROC**, **EF** and **BEDROC** were used in this project, but ultimately, we abandoned the **BEDROC** results because we thought the hyperparameter $\alpha$ of **BEDROC** is too sensitive. And, honestly, the definition of the so-called **early recognition problem** is quite vague and, to some extent, unrealistic. How early is the "**early**"? **BEDROC** is good metric and many people use it, but, still, we want to evaluate the performance from two aspects, which are the overall classification performance (using **AUROC**) and the early recognition performance (using **EF**).
 
 ## What did I do
 Except for conducting iterative virtual screenings against 81 targets using LIDAEUS and Vina respectively, I had made following attempts.
@@ -82,12 +81,106 @@ For Vina, when screening against B-cell lymphoma 2 (**BCL2**), the resulting **A
 
 Some groups also conducted this **AUROC** analysis in the screening against some targets when there are some known actives in the compound pool to show that their settings making the programmes function well.
 
-But, when facing an unknown system (a new target with no active ligands), how should we adjust our programmes to their best states? Hopefully, if we know some key amino acid residues, we can filter some compounds according to whether they contact the key residues. Or, if the target has some homologies and we happen to know these homologies' active ligands, we might use these actives as pseudo actives. However, it is not always the case. In the case of the SARS-CoV-2 virus, it is over 96% homologous with a virus originating from Rhinolophus bat while only 76% with the original SARS-CoV. People surely know some active ligands of the SARS-CoV's main proteinase (**Mpro**), but for the **Mpro** of the Rhinolophus bat virus, they might not do enough research.
+But, when facing an unknown system (a new target with no active ligands), how should we adjust our programmes to their best states? Hopefully, if we know some key amino acid residues, we can filter some compounds according to whether they contact the key residues. Or, if the target has some homologies and we happen to know these homologies' active ligands, we might use these actives as pseudo actives. However, it is not always the case. In the case of the SARS-CoV-2 virus, it is over 96% homologous with a virus originating from Rhinolophus bat while only 76% with the original SARS-CoV. People surely know some active ligands of the SARS-CoV's main proteinase (**Mpro**), but for the **Mpro** of the Rhinolophus bat virus, they might not do enough research. Fortunately, there are only 12 mutations in the **Mpro** of the SARS-CoV-2 compared to the SARS-CoV, and there is no mutation in the binding pocket.
 
 Still, preliminary assessment is important
 
 ### Weighting energy terms
 
+The scoring function (**SF**) of Vina is tuned using the PDBbind. So, I attempted to parameterized the **SF** of LIDAEUS, which consists of three terms, the van der Waals energy (***vdW***), the hydrogen bond donors' energy (***HBD***) and the hydrogen bond acceptors' energy (***HBA***). The free energy formula in the output looks like this,
+
+$$Free\ Energy = a × vdW + b × HBD + c × HBA \quad (eq.\ 1)$$
+
+where, the weights, **𝑎**, **𝑏**, **𝑐**, are normally all set to 1. What I did is to systematically assign different weights to the formula and to subsequently re-rank the compound according to the new energy score and calculate the **AUROC**. Each weight ranges from 0 to 20 with an increment of 1, resulting in 9261 (21 * 21 * 21) outcomes for each target. But we know this could generate redundant combinations where ratio of a, b and c are the same. So, such combinations would only be calculated once. That is to say, we have 7514 weight combinations. Codes are followed.
+
+		def create_jobs(step, reduced=True):
+		    jobs = []
+		    ratio_set = set()
+		    if reduced:
+		        for j in range(step):
+		            for k in range(step):
+		                for l in range(step):
+		                    ratio = cal_ratio(j, k, l)
+		                    if ratio not in ratio_set:
+		                        ratio_set.add(ratio)
+		                        jobs.append((j, k, l))
+		        return tuple(jobs)
+		    else:
+		        for j in range(step):
+		            for k in range(step):
+		                for l in range(step)
+		                    jobs.append((j, k, l))
+		        return tuple(jobs)
+
+		def cal_ratio(j, k, l):
+			if j == 0 and k ==0 and l == 0:
+				return (0, 0, 0)
+			else:
+				total = j + k + l
+				j_ratio = j/total
+				k_ratio = k/total
+				l_raito = l/total
+				return (j_ratio, k_ratio, l_raito)
+
+Given that there is another **SF** of LIDAEUS, a knowledge-based **SF** meauring whether the docked ligand contacts the key amino acid residues and generating a score ranging from 0 to 1.0, I decided to combine this **SF** and the force fied-based **SF**. The weighted free energy formula looks like,
+
+$$Free\ Energy = PIP_{x} × (a × vdW + b × HBD + c × HBA) \quad (eq.\ 2)$$
+
+where the **PIP** stands for *pose interaction profile* and 𝑥 represents four types of the **PIP** scores according to different scoring criteria. After obtaining the entropy score, I did the same thing,
+
+$$Free\ Energy = a × (vdW + HBD + HBA) − (b × T \Delta S_{water\ loss} + c × T \Delta S_{side\ chain}) \quad (eq.\ 3)$$
+
+$$Free\ Energy = PIP_{x} × weighted(Enthalpy + Entropy) \quad (eq.\ 4)$$
+
+Not surprisingly, for most targets, the **AUROC** was increased. But, in some cases, the best **AUROC** could only be 0.50 and this is because all the weights are set to 0 so that every compound shares the same score, which was deemed as a random selection by the **AUROC** calculation algorithm.
+
 ### Re-scoring
 
+In the previous part, I mentioned that I had calculated the entropy and from the **eq. 3**, we could know that I calculate the entropy of the water loss and the flexible amio acid side chain. This entropy calculation is a re-scoring function, implemented by counting, which is so straightforward (codes in the sample code folder). The protocol is followed.
+
+1. assign fix number of water molecules to the target and also the ligand, if they carry hydrogen bond donors/acceptors.
+2. find the contacted residues within 3.5 Å around the ligand
+   - count the water molecues between them
+   - markdown the contacted residues
+3. calcultate the entropy
+
+$$Entroy = Number_{water\ loss} × Entropy_{water\ molecue} + Entropy_{side\ chain} \quad (eq.\ 5)$$
+
+where the entropy values of both a single water molecule and the conformationally changed side chains, are set accoding to the work of [Dunitz (1994)](https://doi.org/10.1126/science.264.5159.670) and [Doig and Sternberg (1995)]( https://doi.org/10.1002/pro.5560041101), respectively.
+
+Given the simplicity of this method, simply adding these entropic values to the original enthalpy scores did not improve LIDAEUS's ranking power, but, after assigning different weights (**eq. 3**), the **AUROC** increased and the outcome was better than only weighting the enthalpy (**eq. 1**).
+
 ### Binding site classification
+
+In this project, I used LIDAEUS to screen 81 targets and no consistent performance of LIDAEUS was observed over any target families (like kinases). And therefore, to find a target family that LIDAEUS could function with similar performance, I tried to classify the binding site of different targets to find some patterns. Here, only one of the classification methods will be introduced. But, no matter which methods I used, the first step for me, was still to extract the binding sites. Unlike [Liu and Altman (2011)](https://doi.org/10.1371/journal.pcbi.1002326) who extracted the residues in a 7.5 Å-radius spherical space, to make it simple, I only extracted the contacted residues within 3.5 Å around the original natural ligands.
+
+And then, instead of superposing the sites and calcualting the RMSD or measuring their volume to compare, I used a set of geometric descriptors ([Ballester et al., 2009](https://doi.org/10.1016/j.jmgm.2009.01.001)), which was used for ligand-based screening. Here is the protocol.
+
+1. find and calculate four points, namely,
+   - the centroid (ctd),
+   - the closest atom to the ctd (cst),
+   - the farthest atom from the ctd (fct)
+   - the farthest atom from the fct (ftf)
+2. calculate the distribution of euclidean distances from other atoms to the above four points (4 distributions in total)
+3. calculate the related mean, variance and the skew of each atomic distance distribution (12 descriptors)
+4. calculate the distance between each site by using the euclidean distance, namely,
+
+$$\sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}} \quad (eq.\ 6)$$
+
+5. calculate the similarity using the following formula
+
+$$\frac{1}{1 + \sqrt{\sum_{i=1}^{12}{(X_i-Y_i)^2}}} \quad (eq.\ 7)$$
+
+In an improved published version ([Shave et al, 2015](https://doi.org/10.1371/journal.pone.0116570)), the number of descriptors was increased to 48, whereas, in my implementation, I used 36 descriptors derived by calculating the above 12 coefficients on sets of hydrophobic atoms (**vdW**), hydrogen bond acceptors (**HBA**) and hydrogen bond donors (**HBD**). So, for each site, the descriptor vector looks like,
+
+$$
+\begin{bmatrix}
+vdW_{01}&vdW_{02}&{\cdots}&{vdW_{12}}&
+HBA_{13}&HBA_{14}&{\cdots}&{HBA_{24}}&
+HBD_{25}&HBD_{26}&{\cdots}&{HBD_{36}}\\
+\end{bmatrix}
+$$
+
+And the similarity would be
+
+$$\frac {1}{1 + \sqrt{\sum_{i=1}^{36}{(X_i-Y_i)^2}}} \quad (eq.\ 8)$$

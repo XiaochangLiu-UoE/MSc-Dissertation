@@ -1,6 +1,6 @@
 import math
 
-
+# calculate three values for a set of distances
 def cal_coordinate(distlist):
     mean_dist = sum(tuple(distlist.values()))/len(distlist)
     var_dist = sum(((dist - mean_dist) ** 2 for dist in tuple(distlist.values()))) / (len(distlist) - 1)
@@ -8,19 +8,19 @@ def cal_coordinate(distlist):
     skew_dist = sum(((dist - mean_dist) / sd) ** 3 for dist in tuple(distlist.values())) / len(distlist)
     return mean_dist, var_dist, skew_dist
 
-
+# calculate coordinate for all distances
 def pack_coordinates(distlist1, distlist2, distlist3, distlist4):
     coordinate = []
     for dl in (distlist1, distlist2, distlist3, distlist4):
         coordinate.extend(cal_coordinate(distlist=dl))
     return tuple(coordinate)
 
-
+# calculte atom distance
 def cal_dist(atom, ref):
     dist = math.sqrt((atom[0] - ref[0]) ** 2 + (atom[1] - ref[1]) ** 2 + (atom[2] - ref[2]) ** 2)
     return dist
 
-
+# calculate center of gravity
 def cal_cog(atoms):
     x = 0
     y = 0
@@ -32,7 +32,7 @@ def cal_cog(atoms):
     cog = (x / len(atoms), y / len(atoms), z / len(atoms))
     return cog
 
-
+# calculate distance from a atom to other atoms
 def accu_dist(atoms, ref):
     dists = dict()
     for atom in atoms:
@@ -40,7 +40,12 @@ def accu_dist(atoms, ref):
         dists[atom] = dist
     return dists
 
-
+# basic descriptor and atom type descriptor, please refer to Shave et al. (2015)
+"""  Shave, S., Blackburn, E.A., Adie, J., Houston, D.R., Auer, M., Webster, S.P.,
+Taylor, P. and Walkinshaw, M.D. 2015.
+UFSRAT: ultra-fast shape recognition with atom types–the discovery  of novel
+bioactive small molecular scaffolds for FKBP12 and 11βHSD1.
+PloS one. 10(2), p.e0116570. """ 
 class Descriptor(object):
     def __init__(self, atoms):
         if len(atoms) != 0:
@@ -67,4 +72,3 @@ class Descriptor(object):
 
     def get_coordinate(self):
         return self.__coordinate
-

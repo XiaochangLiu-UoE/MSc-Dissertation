@@ -6,7 +6,7 @@ __Amino_acid_conformational_entropy = {"LYS": -189, "ARG": -188, "GLN": -173, "M
                                            "TYR": -113, "SER": -111,  "HIS": -95, "ASP": -78, "CYS": -85,
                                            "TRP": -99, "PHE": -62, "ALA": -0, "PRO": -6, "GLY": 0}
 
-
+# read protein atoms and create class ResidueAtom for each atom
 def get_pdb_atoms(pdbfile):
     atoms = []
     with open(pdbfile, 'r') as pdb:
@@ -24,7 +24,7 @@ def get_pdb_atoms(pdbfile):
                                      index=index, residue=residue))
     return tuple(atoms)
 
-
+# read ligand atoms and create class LigandAtom for each atom
 def get_sdf_atoms(sdffile, single=True):
     atom_types = []
     atoms = []
@@ -62,7 +62,8 @@ def get_sdf_atoms(sdffile, single=True):
 
     return tuple(atoms)
 
-
+""" function of lost water entropy and side chain conformational
+entropy calculation"""
 def cal_lw_fs(ligand, protein):
     ligand_protein_contacts = {}
     total_flexible_entropy = 0
@@ -71,7 +72,8 @@ def cal_lw_fs(ligand, protein):
     deduct_water = 1
     protein_contacted_water = {}
     contacted_atom = set()
-
+    # obtain contacted atoms in protein     
+    # contacted atom distance is set to 3.5
     for ligand_atom in ligand:
         ligand_atom_coordinate = ligand_atom.get_coordinate()
         ligand_protein_contacts[ligand_atom] = set()

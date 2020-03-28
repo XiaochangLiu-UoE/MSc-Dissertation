@@ -1,6 +1,6 @@
 import math
 
-
+# create basic class for each atom
 class Atom(object):
     def __init__(self, atom_type, coordinate):
         self.__type = atom_type
@@ -23,7 +23,11 @@ class Point(object):
         __distance = math.sqrt((self.x - point.x) ** 2 + (self.y - point.y) ** 2 + (self.z - point.z) ** 2)
         return __distance
 
-
+""" the number of water that each atom can carry is according to  the number of
+sp hydrogens that a donor atom can donate  or the number of hydrogen bonds that
+an acceptor atom can accept """
+# create atom class of residue
+# when creating, the number of water carried is calculated
 class ResidueAtom(Atom):
     def __init__(self, atom_type, coordinate, index, residue):
         __residue_number_of_water = {"ARG": {"NE": 1, "NH1": 2, "NH2": 2},
@@ -51,10 +55,11 @@ class ResidueAtom(Atom):
     def get_water_count(self):
         return self.__number_of_water
 
-
+# create atom class of ligand;
+# when creating, the number of water carried is calculated
 class LigandAtom(Atom):
     def __init__(self, atom_type, coordinate):
-        # LIDAEUS default setting
+        # the number of water carried by each atom is set
         __ligand_number_of_water = {"N.4": 1, "N.3": 2, "N.2": 3, "N.1": 4, "N.ar": 1, "N.pl3": 1, "N.am": 1,
                                     "O.3": 1, "O.2": 2, "O.co2": 2}
         Atom.__init__(self, atom_type, coordinate)
