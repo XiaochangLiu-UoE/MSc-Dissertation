@@ -130,9 +130,9 @@ where, the weights, **𝑎**, **𝑏**, **𝑐**, are normally all set to 1. Wha
 
 Given that there is another **SF** of LIDAEUS, a knowledge-based **SF** meauring whether the docked ligand contacts the key amino acid residues and generating a score ranging from 0 to 1.0, I decided to combine this **SF** and the force fied-based **SF**. The weighted free energy formula looks like,
 
-<!---$$Free\ Energy = PIP_{x} × (a × vdW + b × HBD + c × HBA) \quad (eq.\ 2)$$--->
+<!---$$Free\ Energy = PIP_{x} \times (a \times vdW + b \times HBD + c \times HBA) \quad (eq.\ 2)$$--->
 
-<p align=center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;×&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;×&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" title="\tiny Free\ Energy = PIP_{x} × (a \times vdW + b \times HBD + c \times HBA) \quad (eq.\ 2)" /></a></p>
+<p align=center><a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;×&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" target="_blank"><img src="https://latex.codecogs.com/png.latex?\inline&space;\dpi{200}&space;\tiny&space;Free\&space;Energy&space;=&space;PIP_{x}&space;\times&space;(a&space;\times&space;vdW&space;&plus;&space;b&space;\times&space;HBD&space;&plus;&space;c&space;\times&space;HBA)&space;\quad&space;(eq.\&space;2)" title="\tiny Free\ Energy = PIP_{x} \times (a \times vdW + b \times HBD + c \times HBA) \quad (eq.\ 2)" /></a></p>
 
 where the **PIP** stands for *pose interaction profile* and 𝑥 represents four types of the **PIP** scores according to different scoring criteria. After obtaining the entropy score, I did the same thing,
 
